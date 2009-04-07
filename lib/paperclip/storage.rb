@@ -232,5 +232,86 @@ module Paperclip
       private :find_credentials
 
     end
+    
+    # Cloud Files
+    module CloudFile
+      def self.extended base
+        require 'cloudfiles'
+        base.instance_eval do
+          @cloudfiles_credentials = parse_credentials(@options[:cloudfiles_credentials])
+          @container_name         = @options[:container]         || @cloudfiles_credentials[:container]
+          @cloudfiles_options     = @options[:cloudfiles_options]     || {}
+          @cf = CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
+          @url            = ":cf_path_url" unless @url.to_s.match(/^:cf.*url$/)
+          @path = options[:path] || ":attachment/:id/:style/:basename.:extension"
+        end
+          base.class.interpolations[:cf_path_url] = lambda do |attachment, style|
+            attachment.cloudfiles_container.object(attachment.path).public_url
+          end
+      end
+      
+      def cloudfiles
+        @cf ||= CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
+      end
+
+      def cloudfiles_container
+        @container ||= cloudfiles.container(@container_name)
+      end
+
+      def container_name
+        @container_name
+      end
+
+      def parse_credentials creds
+        creds = find_credentials(creds).stringify_keys
+        (creds[ENV['RAILS_ENV']] || creds).symbolize_keys
+      end
+      
+      def exists?(style = default_style)
+        cloudfiles_container.object_exists?(path(style))
+      end
+
+      # Returns representation of the data of the file assigned to the given
+      # style, in the format most representative of the current storage.
+      def to_file style = default_style
+        @queued_for_write[style] || cloudfiles_container.create_object(path(style))
+      end
+      alias_method :to_io, :to_file
+
+      def flush_writes #:nodoc:
+        @queued_for_write.each do |style, file|
+            logger.info("[paperclip] saving #{path(style)}")
+            object = cloudfiles_container.create_object(path(style))
+            object.write(file)
+        end
+        @queued_for_write = {}
+      end
+
+      def flush_deletes #:nodoc:
+        @queued_for_delete.each do |path|
+            logger.info("[paperclip] deleting #{path}")
+            if object = cloudfiles_container.object_exists?(path)
+              cloudfiles_container.delete_object(path)
+            end
+        end
+        @queued_for_delete = []
+      end
+      
+      def find_credentials creds
+        case creds
+        when File
+          YAML.load_file(creds.path)
+        when String
+          YAML.load_file(creds)
+        when Hash
+          creds
+        else
+          raise ArgumentError, "Credentials are not a path, file, or hash."
+        end
+      end
+      private :find_credentials
+
+    end
+    
   end
 end

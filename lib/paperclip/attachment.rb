@@ -328,7 +328,7 @@ module Paperclip
     end
 
     def initialize_storage #:nodoc:
-      @storage_module = Paperclip::Storage.const_get(@storage.to_s.capitalize)
+      @storage_module = Paperclip::Storage.const_get(@storage.to_s.classify)
       self.extend(@storage_module)
     end
 
