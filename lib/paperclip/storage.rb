@@ -273,7 +273,7 @@ module Paperclip
           @cloudfiles_options     = @options[:cloudfiles_options]     || {}
           @cf = CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
           @url            = ":cf_path_url" unless @url.to_s.match(/^:cf.*url$/)
-          @path = @options[:path] || ":attachment/:id/:style/:basename.:extension"
+          @path = Paperclip::Attachment.default_options[:path] == @options[:path] ? ":attachment/:id/:style/:basename.:extension" : @options[:path]
         end
           base.class.interpolations[:cf_path_url] = lambda do |attachment, style|
             attachment.cloudfiles_container.object(attachment.path).public_url
