@@ -233,7 +233,37 @@ module Paperclip
 
     end
     
-    # Cloud Files
+    # Rackspace's Mosso Cloud Files service is a scalable, easy place to store files for
+    # distribution, and is integrated into the Limelight CDN. You can find out more about 
+    # it at http://mosso.com/cloudfiles.jsp
+    # There are a few Cloud Files-specific options for has_attached_file:
+    # * +cloudfiles_credentials+: Takes a path, a File, or a Hash. The path (or File) must point
+    #   to a YAML file containing the +username+ and +api_key+ that Rackspace
+    #   gives you. You can 'environment-space' this just like you do to your
+    #   database.yml file, so different environments can use different accounts:
+    #     development:
+    #       username: hayley
+    #       api_key: a7f... 
+    #     test:
+    #       username: katherine
+    #       api_key: 7fa... 
+    #     production:
+    #       username: minter
+    #       api_key: 87k... 
+    #   This is not required, however, and the file may simply look like this:
+    #     username: minter...
+    #     api_key: 11q... 
+    #   In which case, those access keys will be used in all environments. You can also
+    #   put your container name in this file, instead of adding it to the code directly.
+    #   This is useful when you want the same account but a different container for 
+    #   development versus production.
+    # * +container+: This is the name of the Cloud Files container that will store your files. 
+    #   This container should be marked "public" so that the files are available to the world at large.
+    # * +path+: This is the path under the container in which the file will be stored. The
+    #   CDN URL will be constructed from the CDN identifier for the container and the path. This is what 
+    #   you will want to interpolate. Keys should be unique, like filenames, and despite the fact that
+    #   Cloud Files (strictly speaking) does not support directories, you can still use a / to
+    #   separate parts of your file name, and they will show up in the URL structure.
     module CloudFile
       def self.extended base
         require 'cloudfiles'

@@ -91,9 +91,8 @@ file at
 NOTE: This is a change from previous versions of Paperclip, but is overall a
 safer choice for the defaul file store.
 
-You may also choose to store your files using Amazon's S3 service. You can find
-more information about S3 storage at the description for
-Paperclip::Storage::S3.
+You may also choose to store your files using Amazon's S3 service or Rackspace's Cloud Files service. You can find
+more information about S3 storage at the description for Paperclip::Storage::S3. and more information about Cloud Files storage at the description for Paperclip::Storage::CloudFile
 
 Files on the local filesystem (and in the Rails app's public directory) will be
 available to the internet at large. If you require access control, it's
