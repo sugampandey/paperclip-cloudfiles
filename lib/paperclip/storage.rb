@@ -285,7 +285,13 @@ module Paperclip
       end
 
       def cloudfiles_container
-        @container ||= cloudfiles.container(@container_name)
+        if @container 
+          @container
+        else
+          @container = cloudfiles.create_container(@container_name)
+          @container.make_public
+          @container
+        end
       end
 
       def container_name
@@ -311,7 +317,7 @@ module Paperclip
       def flush_writes #:nodoc:
         @queued_for_write.each do |style, file|
             logger.info("[paperclip] saving #{path(style)}")
-            object = cloudfiles_container.create_object(path(style))
+            object = cloudfiles_container.create_object(path(style),true)
             object.write(file)
         end
         @queued_for_write = {}
