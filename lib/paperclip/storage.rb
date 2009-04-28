@@ -276,7 +276,7 @@ module Paperclip
           @path = Paperclip::Attachment.default_options[:path] == @options[:path] ? ":attachment/:id/:style/:basename.:extension" : @options[:path]
         end
           base.class.interpolations[:cf_path_url] = lambda do |attachment, style|
-            attachment.cloudfiles_container.object(attachment.path).public_url
+            attachment.cloudfiles_container.object(attachment.path(style)).public_url
           end
       end
       
