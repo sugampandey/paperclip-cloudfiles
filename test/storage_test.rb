@@ -36,6 +36,47 @@ class StorageTest < Test::Unit::TestCase
       assert_equal({:test => "12345"}, @avatar.parse_credentials(:test => "12345"))
     end
   end
+  
+  context "Parsing Cloud Files credentials" do
+    setup do
+      CloudFiles::Connection.expects(:new).returns(true)
+      
+      rebuild_model :storage => :cloud_files,
+                    :bucket => "testing",
+                    :cloudfiles_credentials => {:not => :important}
+
+      
+      @dummy = Dummy.new
+      @avatar = @dummy.avatar
+      
+
+      @current_env = ENV['RAILS_ENV']
+    end
+
+    teardown do
+      ENV['RAILS_ENV'] = @current_env
+    end
+
+    should "get the correct credentials when RAILS_ENV is production" do
+      ENV['RAILS_ENV'] = 'production'
+      assert_equal({:username => "minter"},
+                   @avatar.parse_credentials('production' => {:username => 'minter'},
+                                             :development => {:username => "mcornick"}))
+    end
+
+    should "get the correct credentials when RAILS_ENV is development" do
+      ENV['RAILS_ENV'] = 'development'
+      assert_equal({:key => "mcornick"},
+                   @avatar.parse_credentials('production' => {:key => 'minter'},
+                                             :development => {:key => "mcornick"}))
+    end
+
+    should "return the argument if the key does not exist" do
+      ENV['RAILS_ENV'] = "not really an env"
+      assert_equal({:test => "minter"}, @avatar.parse_credentials(:test => "minter"))
+    end
+  end
+  
 
   context "" do
     setup do
@@ -52,6 +93,7 @@ class StorageTest < Test::Unit::TestCase
       assert_match %r{^http://s3.amazonaws.com/bucket/avatars/stringio.txt}, @dummy.avatar.url
     end
   end
+  
   context "" do
     setup do
       rebuild_model :storage => :s3,

@@ -1,9 +1,12 @@
+$:.reject! { |e| e.include? 'TextMate' }
+
 require 'rubygems'
 require 'test/unit'
 gem 'thoughtbot-shoulda', ">= 2.9.0"
 require 'shoulda'
 require 'mocha'
 require 'tempfile'
+require 'cloudfiles'
 
 gem 'sqlite3-ruby'
 
