@@ -302,7 +302,7 @@ module Paperclip
 
       def parse_credentials creds
         creds = find_credentials(creds).stringify_keys
-        (creds[ENV['RAILS_ENV']] || creds).symbolize_keys
+        (creds[RAILS_ENV] || creds).symbolize_keys
       end
       
       def exists?(style = default_style)
@@ -318,7 +318,6 @@ module Paperclip
 
       def flush_writes #:nodoc:
         @queued_for_write.each do |style, file|
-            logger.info("[paperclip] saving #{path(style)}")
             object = cloudfiles_container.create_object(path(style),true)
             object.write(file)
         end
@@ -327,7 +326,6 @@ module Paperclip
 
       def flush_deletes #:nodoc:
         @queued_for_delete.each do |path|
-            logger.info("[paperclip] deleting #{path}")
             if object = cloudfiles_container.object_exists?(path)
               cloudfiles_container.delete_object(path)
             end
