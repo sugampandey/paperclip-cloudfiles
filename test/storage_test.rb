@@ -348,6 +348,21 @@ class StorageTest < Test::Unit::TestCase
       assert "bucket_b", Dummy.new(:other => 'b').avatar.bucket_name
     end
   end
+  
+  context "An attachment with Cloud Files storage and container defined as a Proc" do
+    setup do
+      CloudFiles::Connection.stubs(:new).returns(true)
+      rebuild_model :storage => :cloud_files,
+                    :bucket => lambda { |attachment| "container_#{attachment.instance.other}" },
+                    :cloudfiles_credentials => {:not => :important}
+    end
+    
+    should "get the right container name" do
+      assert "container_a", Dummy.new(:other => 'a').avatar.container_name
+      assert "container_b", Dummy.new(:other => 'b').avatar.container_name
+    end
+  end
+  
 
   context "An attachment with S3 storage and specific s3 headers set" do
     setup do
@@ -434,4 +449,47 @@ class StorageTest < Test::Unit::TestCase
       end
     end
   end
+  
+  unless ENV["CF_TEST_BUCKET"].blank?
+    context "Using CloudFiles for real, an attachment with CloudFiles storage" do
+      setup do
+        rebuild_model :styles => { :thumb => "100x100", :square => "32x32#" },
+                      :storage => :cloud_files,
+                      :container => ENV["CF_TEST_BUCKET"],
+                      :path => ":class/:attachment/:id/:style.:extension",
+                      :cloudfiles_credentials => File.new(File.join(File.dirname(__FILE__), "cloudfiles.yml"))
+
+        Dummy.delete_all
+        @dummy = Dummy.new
+      end
+
+      should "be extended by the CloudFile module" do
+        assert Dummy.new.avatar.is_a?(Paperclip::Storage::CloudFile)
+      end
+
+      context "when assigned" do
+        setup do
+          @file = File.new(File.join(File.dirname(__FILE__), 'fixtures', '5k.png'), 'rb')
+          @dummy.avatar = @file
+        end
+
+        teardown { @file.close }
+
+        should "still return a Tempfile when sent #to_io" do
+          assert_equal Tempfile, @dummy.avatar.to_io.class
+        end
+
+        context "and saved" do
+          setup do
+            @dummy.save
+          end
+
+          should "be on Cloud Files" do
+            assert true
+          end
+        end
+      end
+    end
+  end
+  
 end

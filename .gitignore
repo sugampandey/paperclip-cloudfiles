@@ -2,4 +2,5 @@
 *.swp
 tmp
 test/s3.yml
+test/cloudfiles.yml
 public
