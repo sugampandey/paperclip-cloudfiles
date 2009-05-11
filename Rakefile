@@ -42,6 +42,7 @@ task :clean do |t|
   FileUtils.rm_rf "pkg"
   FileUtils.rm "test/debug.log" rescue nil
   FileUtils.rm "test/paperclip.db" rescue nil
+  Dir.glob("paperclip-*.gem").each{|f| FileUtils.rm f }
 end
 
 spec = Gem::Specification.new do |s| 
@@ -64,14 +65,18 @@ spec = Gem::Specification.new do |s|
   s.extra_rdoc_files  = FileList["README*"].to_a
   s.rdoc_options << '--line-numbers' << '--inline-source'
   s.requirements << "ImageMagick"
-  s.add_runtime_dependency 'right_aws'
   s.add_development_dependency 'thoughtbot-shoulda'
   s.add_development_dependency 'mocha'
 end
  
 desc "Generate a gemspec file for GitHub"
-task :gemspec do
+task :gemspec => :clean do
   File.open("#{spec.name}.gemspec", 'w') do |f|
     f.write spec.to_ruby
   end
+end 
+
+desc "Build the gem into the current directory"
+task :gem => :gemspec do
+  `gem build #{spec.name}.gemspec`
 end
