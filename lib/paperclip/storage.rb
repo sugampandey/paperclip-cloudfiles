@@ -238,6 +238,10 @@ module Paperclip
     # Rackspace's Mosso Cloud Files service is a scalable, easy place to store files for
     # distribution, and is integrated into the Limelight CDN. You can find out more about 
     # it at http://mosso.com/cloudfiles.jsp
+    #
+    # To install the Cloud Files gem, add the github gem source ("gem sources -a http://gems.github.com"), then
+    # do a "gem install rackspace-cloudfiles".  For more information, see the github repository at http://github.com/rackspace/ruby-cloudfiles/
+    #
     # There are a few Cloud Files-specific options for has_attached_file:
     # * +cloudfiles_credentials+: Takes a path, a File, or a Hash. The path (or File) must point
     #   to a YAML file containing the +username+ and +api_key+ that Rackspace
