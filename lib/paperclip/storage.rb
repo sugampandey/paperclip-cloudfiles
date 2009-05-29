@@ -277,17 +277,18 @@ module Paperclip
           @cloudfiles_credentials = parse_credentials(@options[:cloudfiles_credentials])
           @container_name         = @options[:container]         || @cloudfiles_credentials[:container]
           @cloudfiles_options     = @options[:cloudfiles_options]     || {}
-          @cf = CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
-          @url            = ":cf_path_url" unless @url.to_s.match(/^:cf.*url$/)
+          @@cdn_url ||= cloudfiles_container.cdn_url
+          @path_filename            = ":cf_path_filename" unless @url.to_s.match(/^:cf.*filename$/)
+          @url = @@cdn_url + "/#{URI.encode(@path_filename).gsub(/&/,'%26')}"
           @path = Paperclip::Attachment.default_options[:path] == @options[:path] ? ":attachment/:id/:style/:basename.:extension" : @options[:path]
         end
-          Paperclip.interpolates(:cf_path_url) do |attachment, style|
-            attachment.cloudfiles_container.object(attachment.path(style)).public_url
+          Paperclip.interpolates(:cf_path_filename) do |attachment, style|
+            attachment.path(style)
           end
       end
       
       def cloudfiles
-        @cf ||= CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
+        @@cf ||= CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
       end
 
       def cloudfiles_container
