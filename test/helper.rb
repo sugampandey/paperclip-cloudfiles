@@ -2,7 +2,6 @@ $:.reject! { |e| e.include? 'TextMate' }
 
 require 'rubygems'
 require 'test/unit'
-gem 'thoughtbot-shoulda', ">= 2.9.0"
 require 'shoulda'
 require 'mocha'
 require 'tempfile'
@@ -43,7 +42,7 @@ def reset_class class_name
 end
 
 def reset_table table_name, &block
-  block ||= lambda{ true }
+  block ||= lambda { |table| true }
   ActiveRecord::Base.connection.create_table :dummies, {:force => true}, &block
 end
 
