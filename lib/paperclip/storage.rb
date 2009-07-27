@@ -290,7 +290,7 @@ module Paperclip
       end
 
       def cloudfiles_container
-        if @container 
+        if @container
           @container
         else
           @container = cloudfiles.create_container(@container_name)
@@ -329,9 +329,7 @@ module Paperclip
 
       def flush_deletes #:nodoc:
         @queued_for_delete.each do |path|
-            if object = cloudfiles_container.object_exists?(path)
-              cloudfiles_container.delete_object(path)
-            end
+          cloudfiles_container.delete_object(path)
         end
         @queued_for_delete = []
       end
