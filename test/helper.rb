@@ -3,9 +3,11 @@ $:.reject! { |e| e.include? 'TextMate' }
 require 'rubygems'
 require 'test/unit'
 require 'shoulda'
-require 'mocha'
 require 'tempfile'
 require 'cloudfiles'
+
+gem 'jferris-mocha', '0.9.5.0.1241126838'
+require 'mocha'
 
 gem 'sqlite3-ruby'
 
@@ -99,4 +101,11 @@ end
 
 def attachment options
   Paperclip::Attachment.new(:avatar, FakeModel.new, options)
+end
+
+def silence_warnings
+  old_verbose, $VERBOSE = $VERBOSE, nil
+  yield
+ensure
+  $VERBOSE = old_verbose
 end
