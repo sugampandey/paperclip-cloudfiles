@@ -100,13 +100,13 @@ class StorageTest < Test::Unit::TestCase
       assert_match %r{^http://s3.amazonaws.com/bucket/avatars/stringio.txt}, @dummy.avatar.url
     end
   end
-  
+  c0045182.cdn.cloudfiles.rackspacecloud.com
   context "" do
     setup do
       container = mock
       container.stubs(:make_public).returns(true)
-      container.stubs(:public_url).returns('http://cdn.cloudfiles.mosso.com/c10181/avatars/stringio.txt') 
-      container.stubs(:cdn_url).returns('http://cdn.cloudfiles.mosso.com/c10181')
+      container.stubs(:public_url).returns('http://c0010181.cdn.cloudfiles.rackspacecloud.com/avatars/stringio.txt') 
+      container.stubs(:cdn_url).returns('http://c0010181.cdn.cloudfiles.rackspacecloud.com')
       connection = mock
       connection.stubs(:create_container).returns(container)
       CloudFiles::Connection.expects(:new).returns(connection)
@@ -120,7 +120,7 @@ class StorageTest < Test::Unit::TestCase
     end
 
     should "return a url based on an Cloud Files path" do
-      assert_match %r{^http://cdn.cloudfiles.mosso.com/c10181/avatars/stringio.txt}, @dummy.avatar.url
+      assert_match %r{^http://c0010181.cdn.cloudfiles.rackspacecloud.com/avatars/stringio.txt}, @dummy.avatar.url
     end
   end
   

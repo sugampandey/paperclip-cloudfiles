@@ -240,9 +240,9 @@ module Paperclip
 
     end
     
-    # Rackspace's Mosso Cloud Files service is a scalable, easy place to store files for
+    # Rackspace's Cloud Files service is a scalable, easy place to store files for
     # distribution, and is integrated into the Limelight CDN. You can find out more about 
-    # it at http://mosso.com/cloudfiles.jsp
+    # it at http://www.rackspacecloud.com/cloud_hosting_products/files
     #
     # To install the Cloud Files gem, add the github gem source ("gem sources -a http://gems.github.com"), then
     # do a "gem install rackspace-cloudfiles".  For more information, see the github repository at http://github.com/rackspace/ruby-cloudfiles/
@@ -250,7 +250,9 @@ module Paperclip
     # There are a few Cloud Files-specific options for has_attached_file:
     # * +cloudfiles_credentials+: Takes a path, a File, or a Hash. The path (or File) must point
     #   to a YAML file containing the +username+ and +api_key+ that Rackspace
-    #   gives you. You can 'environment-space' this just like you do to your
+    #   gives you. Rackspace customers using the cloudfiles gem >= 1.4.1 can also set a servicenet
+    #   variable to true to send traffic over the unbilled internal Rackspace service network.
+    #   You can 'environment-space' this just like you do to your
     #   database.yml file, so different environments can use different accounts:
     #     development:
     #       username: hayley
@@ -261,6 +263,7 @@ module Paperclip
     #     production:
     #       username: minter
     #       api_key: 87k... 
+    #       servicenet: true
     #   This is not required, however, and the file may simply look like this:
     #     username: minter...
     #     api_key: 11q... 
@@ -293,7 +296,7 @@ module Paperclip
       end
       
       def cloudfiles
-        @@cf ||= CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key])
+        @@cf ||= CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key], true, @cloudfiles_credentials[:servicenet])
       end
 
       def cloudfiles_container
