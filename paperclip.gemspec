@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = "2.3.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Jon Yurek"]
+  s.authors = ["Jon Yurek","H. Wade Minter"]
   s.date = %q{2009-10-09}
   s.email = %q{jyurek@thoughtbot.com}
   s.extra_rdoc_files = ["README.rdoc"]
@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<thoughtbot-shoulda>, [">= 0"])
     s.add_dependency(%q<jferris-mocha>, ["= 0.9.5.0.1241126838"])
     s.add_dependency(%q<aws-s3>, [">= 0"])
+    s.add_dependency(%q<cloudfiles>, [">= 1.4.1"])
     s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
     s.add_dependency(%q<activerecord>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 0"])
