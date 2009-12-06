@@ -277,6 +277,7 @@ module Paperclip
     #   development versus production.
     # * +container+: This is the name of the Cloud Files container that will store your files. 
     #   This container should be marked "public" so that the files are available to the world at large.
+    #   If the container does not exist, it will be created and marked public.
     # * +path+: This is the path under the container in which the file will be stored. The
     #   CDN URL will be constructed from the CDN identifier for the container and the path. This is what 
     #   you will want to interpolate. Keys should be unique, like filenames, and despite the fact that
@@ -287,7 +288,7 @@ module Paperclip
         require 'cloudfiles'
         base.instance_eval do
           @cloudfiles_credentials = parse_credentials(@options[:cloudfiles_credentials])
-          @container_name         = @options[:container]         || @cloudfiles_credentials[:container]
+          @container_name         = @options[:container]              || @cloudfiles_credentials[:container]
           @cloudfiles_options     = @options[:cloudfiles_options]     || {}
           @@cdn_url ||= cloudfiles_container.cdn_url
           @path_filename            = ":cf_path_filename" unless @url.to_s.match(/^:cf.*filename$/)

@@ -16,7 +16,7 @@ See the documentation for +has_attached_file+ in Paperclip::ClassMethods for
 more detailed options.
 
 This fork has support for Rackspace Cloud Files.  It requires the "cloudfiles"
-gem, >= 1.4.1, from Gemcutter.org.
+gem, >= 1.4.4, from Gemcutter.org.
 
 ==Quick Start
 
