@@ -34,6 +34,7 @@ require 'paperclip/processor'
 require 'paperclip/thumbnail'
 require 'paperclip/storage'
 require 'paperclip/interpolations'
+require 'paperclip/style'
 require 'paperclip/attachment'
 if defined? RAILS_ROOT
   Dir.glob(File.join(File.expand_path(RAILS_ROOT), "lib", "paperclip_processors", "*.rb")).each do |processor|
@@ -239,7 +240,7 @@ module Paperclip
 
       validates_each(name) do |record, attr, value|
         attachment = record.attachment_for(name)
-        attachment.send(:flush_errors) unless attachment.valid?
+        attachment.send(:flush_errors)
       end
     end
 
