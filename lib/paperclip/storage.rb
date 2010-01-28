@@ -248,8 +248,8 @@ module Paperclip
     # distribution, and is integrated into the Limelight CDN. You can find out more about 
     # it at http://www.rackspacecloud.com/cloud_hosting_products/files
     #
-    # To install the Cloud Files gem, add the github gem source ("gem sources -a http://gems.github.com"), then
-    # do a "gem install rackspace-cloudfiles".  For more information, see the github repository at http://github.com/rackspace/ruby-cloudfiles/
+    # To install the Cloud Files gem, add the Gemcutter gem source ("gem sources -a http://gemcutter.org"), then
+    # do a "gem install cloudfiles".  For more information, see the github repository at http://github.com/rackspace/ruby-cloudfiles/
     #
     # There are a few Cloud Files-specific options for has_attached_file:
     # * +cloudfiles_credentials+: Takes a path, a File, or a Hash. The path (or File) must point
@@ -293,7 +293,7 @@ module Paperclip
           @@cdn_url ||= cloudfiles_container.cdn_url
           @path_filename            = ":cf_path_filename" unless @url.to_s.match(/^:cf.*filename$/)
           @url = @@cdn_url + "/#{URI.encode(@path_filename).gsub(/&/,'%26')}"
-          @path = Paperclip::Attachment.default_options[:path] == @options[:path] ? ":attachment/:id/:style/:basename.:extension" : @options[:path]
+          @path = @options[:path] || ":attachment/:id/:style/:basename.:extension"
         end
           Paperclip.interpolates(:cf_path_filename) do |attachment, style|
             attachment.path(style)
