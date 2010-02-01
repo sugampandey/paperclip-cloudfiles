@@ -293,7 +293,8 @@ module Paperclip
           @@cdn_url ||= cloudfiles_container.cdn_url
           @path_filename            = ":cf_path_filename" unless @url.to_s.match(/^:cf.*filename$/)
           @url = @@cdn_url + "/#{URI.encode(@path_filename).gsub(/&/,'%26')}"
-          @path = @options[:path] || ":attachment/:id/:style/:basename.:extension"
+          @path = (Paperclip::Attachment.default_options[:path] == @options[:path]) ? ":attachment/:id/:style/:basename.:extension" : @options[:path]
+          File.open('/tmp/path.log', 'a+') {|f| f.write("Path is #{@path} from options #{@options[:path]}\n") }
         end
           Paperclip.interpolates(:cf_path_filename) do |attachment, style|
             attachment.path(style)
