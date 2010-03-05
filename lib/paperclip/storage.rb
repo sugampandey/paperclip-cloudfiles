@@ -289,9 +289,10 @@ module Paperclip
         base.instance_eval do
           @cloudfiles_credentials = parse_credentials(@options[:cloudfiles_credentials])
           @container_name         = @options[:container]              || @cloudfiles_credentials[:container]
+          @container_name         = @container_name.call(self) if @container_name.is_a?(Proc)
           @cloudfiles_options     = @options[:cloudfiles_options]     || {}
-          @@cdn_url ||= cloudfiles_container.cdn_url
-          @path_filename            = ":cf_path_filename" unless @url.to_s.match(/^:cf.*filename$/)
+          @@cdn_url               = cloudfiles_container.cdn_url
+          @path_filename          = ":cf_path_filename" unless @url.to_s.match(/^:cf.*filename$/)
           @url = @@cdn_url + "/#{URI.encode(@path_filename).gsub(/&/,'%26')}"
           @path = (Paperclip::Attachment.default_options[:path] == @options[:path]) ? ":attachment/:id/:style/:basename.:extension" : @options[:path]
         end
