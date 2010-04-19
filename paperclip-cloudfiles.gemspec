@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{paperclip-cloudfiles}
-  s.version = "2.3.1.1.5"
+  s.version = "2.3.1.1.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jon Yurek", "H. Wade Minter"]
-  s.date = %q{2010-03-05}
+  s.date = %q{2010-04-19}
   s.description = %q{A fork of the Thoughtbot Paperclip gem/plugin, adding support for Rackspace Cloud Files.  This fork is maintained by H. Wade Minter <minter@lunenburg.org>}
   s.email = ["jyurek@thoughtbot.com", "minter@lunenburg.org"]
   s.extra_rdoc_files = ["README.rdoc"]

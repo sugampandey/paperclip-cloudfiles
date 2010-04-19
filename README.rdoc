@@ -24,6 +24,12 @@ on Gemcutter's gem server.
 
 ==Quick Start
 
+In your environment.rb:
+
+  config.gem "paperclip-cloudfiles", :lib => 'paperclip'
+
+This is because the gem name and the library name don't match.
+
 In your model:
 
   class User < ActiveRecord::Base

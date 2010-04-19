@@ -286,6 +286,7 @@ module Paperclip
     module CloudFile
       def self.extended base
         require 'cloudfiles'
+        @@container ||= {}
         base.instance_eval do
           @cloudfiles_credentials = parse_credentials(@options[:cloudfiles_credentials])
           @container_name         = @options[:container]              || @cloudfiles_credentials[:container]
@@ -305,14 +306,14 @@ module Paperclip
         @@cf ||= CloudFiles::Connection.new(@cloudfiles_credentials[:username], @cloudfiles_credentials[:api_key], true, @cloudfiles_credentials[:servicenet])
       end
 
+      def create_container
+        container = cloudfiles.create_container(@container_name)
+        container.make_public
+        container
+      end
+      
       def cloudfiles_container
-        if @container
-          @container
-        else
-          @container = cloudfiles.create_container(@container_name)
-          @container.make_public
-          @container
-        end
+        @@container[@container_name] ||= create_container
       end
 
       def container_name
