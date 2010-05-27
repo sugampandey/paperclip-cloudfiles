@@ -92,7 +92,7 @@ module Paperclip
       return nil if uploaded_file.nil?
 
       @queued_for_write[:original]   = uploaded_file.to_tempfile
-      instance_write(:file_name,       uploaded_file.original_filename.strip.gsub(/[^A-Za-z\d\.\-_]+/, '_'))
+      instance_write(:file_name,       uploaded_file.original_filename.strip)
       instance_write(:content_type,    uploaded_file.content_type.to_s.strip)
       instance_write(:file_size,       uploaded_file.size.to_i)
       instance_write(:updated_at,      Time.now)
@@ -345,18 +345,11 @@ module Paperclip
 
     def post_process #:nodoc:
       return if @queued_for_write[:original].nil?
-      return if fire_events(:before)
-      post_process_styles
-      return if fire_events(:after)
-    end
-
-    def fire_events(which) #:nodoc:
-      return true if callback(:"#{which}_post_process") == false
-      return true if callback(:"#{which}_#{name}_post_process") == false
-    end
-
-    def callback which #:nodoc:
-      instance.run_callbacks(which, @queued_for_write){|result, obj| result == false }
+      instance.run_paperclip_callbacks(:post_process) do
+        instance.run_paperclip_callbacks(:"#{name}_post_process") do
+          post_process_styles
+        end
+      end
     end
 
     def post_process_styles #:nodoc:

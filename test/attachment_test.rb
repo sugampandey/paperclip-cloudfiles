@@ -11,7 +11,7 @@ class AttachmentTest < Test::Unit::TestCase
     @model = @attachment.instance
     @model.id = 1234
     @model.avatar_file_name = "fake.jpg"
-    assert_equal "#{RAILS_ROOT}/public/fake_models/1234/fake", @attachment.path
+    assert_equal "#{Rails.root}/public/fake_models/1234/fake", @attachment.path
   end
 
   should "call a proc sent to check_guard" do
@@ -118,12 +118,11 @@ class AttachmentTest < Test::Unit::TestCase
       @dummy.stubs(:id).returns(@id)
       @file = StringIO.new(".")
       @dummy.avatar = @file
+      Rails.stubs(:env).returns(@rails_env)
     end
 
     should "return the proper path" do
-      temporary_rails_env(@rails_env) {
-        assert_equal "#{@rails_env}/#{@id}.png", @dummy.avatar.path
-      }
+      assert_equal "#{@rails_env}/#{@id}.png", @dummy.avatar.path
     end
   end
 
@@ -375,7 +374,7 @@ class AttachmentTest < Test::Unit::TestCase
 
   context "Assigning an attachment with post_process hooks" do
     setup do
-      rebuild_model :styles => { :something => "100x100#" }
+      rebuild_class :styles => { :something => "100x100#" }
       Dummy.class_eval do
         before_avatar_post_process :do_before_avatar
         after_avatar_post_process :do_after_avatar
@@ -415,16 +414,16 @@ class AttachmentTest < Test::Unit::TestCase
       @dummy.expects(:do_before_avatar).never
       @dummy.expects(:do_after_avatar).never
       @dummy.expects(:do_before_all).with().returns(false)
-      @dummy.expects(:do_after_all).never
+      @dummy.expects(:do_after_all)
       Paperclip::Thumbnail.expects(:make).never
       @dummy.avatar = @file
     end
 
     should "cancel the processing if a before_avatar_post_process returns false" do
       @dummy.expects(:do_before_avatar).with().returns(false)
-      @dummy.expects(:do_after_avatar).never
+      @dummy.expects(:do_after_avatar)
       @dummy.expects(:do_before_all).with().returns(true)
-      @dummy.expects(:do_after_all).never
+      @dummy.expects(:do_after_all)
       Paperclip::Thumbnail.expects(:make).never
       @dummy.avatar = @file
     end
@@ -434,15 +433,11 @@ class AttachmentTest < Test::Unit::TestCase
     setup do
       rebuild_model :styles => { :something => "100x100#" }
       @file  = StringIO.new(".")
-      @file.expects(:original_filename).returns("5k.png\n\n")
-      @file.expects(:content_type).returns("image/png\n\n")
+      @file.stubs(:original_filename).returns("5k.png\n\n")
+      @file.stubs(:content_type).returns("image/png\n\n")
       @file.stubs(:to_tempfile).returns(@file)
       @dummy = Dummy.new
       Paperclip::Thumbnail.expects(:make).returns(@file)
-      @dummy.expects(:run_callbacks).with(:before_avatar_post_process, {:original => @file})
-      @dummy.expects(:run_callbacks).with(:before_post_process, {:original => @file})
-      @dummy.expects(:run_callbacks).with(:after_avatar_post_process, {:original => @file, :something => @file})
-      @dummy.expects(:run_callbacks).with(:after_post_process, {:original => @file, :something => @file})
       @attachment = @dummy.avatar
       @dummy.avatar = @file
     end
@@ -479,10 +474,9 @@ class AttachmentTest < Test::Unit::TestCase
       @dummy.avatar = @not_file
     end
     
-    should "remove strange letters and replace with underscore (_)" do
-      assert_equal "sheep_say_b_.png", @dummy.avatar.original_filename
+    should "not remove strange letters" do
+      assert_equal "sheep_say_bæ.png", @dummy.avatar.original_filename
     end
-    
   end
 
   context "An attachment" do
