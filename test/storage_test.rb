@@ -94,7 +94,7 @@ class StorageTest < Test::Unit::TestCase
       assert_match %r{^http://s3.amazonaws.com/bucket/avatars/stringio.txt}, @dummy.avatar.url
     end
   end
-  c0045182.cdn.cloudfiles.rackspacecloud.com
+
   context "" do
     setup do
       container = mock
