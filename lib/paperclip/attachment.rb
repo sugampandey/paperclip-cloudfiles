@@ -275,7 +275,7 @@ module Paperclip
     end
 
     def initialize_storage #:nodoc:
-      storage_class_name = @storage.to_s.capitalize
+      storage_class_name = @storage.to_s.classify
       begin
         @storage_module = Paperclip::Storage.const_get(storage_class_name)
       rescue NameError
