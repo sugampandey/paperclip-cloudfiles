@@ -99,14 +99,18 @@ module Paperclip
       alias_method :to_io, :to_file
 
       def flush_writes #:nodoc:
+        Rails.logger.info "*** flush_writes attachment ***"
         @queued_for_write.each do |style, file|
             retry_times = 0
             saved = false
             while saved == false and retry_times < 3
-              puts "flush_writes style: #{style} file: #{file} path:#{path(style)}"
+              Rails.logger.info "** flush_writes style: #{style} file: #{file} path:#{path(style)} retry_time => #{retry_times} **"
               begin 
+                Rails.logger.info "** creating cloudfiles object **"
                 object = cloudfiles_container.create_object(path(style),false)
                 mime_types = MIME::Types.type_for(path(style))
+                
+                Rails.logger.info "** saving file cloudfiles **"
                 if mime_types.first.nil?
                   object.load_from_filename(file.path, {}, true)
                 else
@@ -115,7 +119,8 @@ module Paperclip
                   object.load_from_filename(file.path, {'Content-Type' => content_type_to_write}, true)
                 end
                 saved = true
-              rescue CloudFiles::Exception::InvalidResponse
+              rescue CloudFiles::Exception::InvalidResponse, CloudFiles::Exception::Connection
+                Rails.logger.info "** CloudFiles::Exception::InvalidResponse, CloudFiles::Exception::Connection Raised **"
                 reconnect_cloudfiles
                 saved = false
                 retry_times += 1
